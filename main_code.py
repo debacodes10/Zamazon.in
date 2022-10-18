@@ -1,9 +1,19 @@
 import pickle
 import random
+import time
+import pyttsx3
+
+def tts(text):
+    engine = pyttsx3.init()
+    say_var = text
+    engine.say(say_var)
+    engine.runAndWait()
 
 def login(c=0, t=0):            #if account action = login
     f= open("D:\\Zamazon.in\credentials.dat","rb")   #binary file storing account credentials
+    tts("Please enter your UserID: ")
     id= input("Please enter your UserID: ")               #store id no = id
+    tts("Please enter your password: ")
     password= input("Please enter your password: ")      #store password = password
     print(" ")
     creds = [id, password]
@@ -13,32 +23,41 @@ def login(c=0, t=0):            #if account action = login
             if creds[0] == check[0]:
                 for i in range(0,2):
                     if creds[1] == check[1]:
-                        print("Login Successful.")
+                        print("Login Successful!")
+                        tts("Login successful!")
                         t=0
                         break
                     else:
-                        password = input("Password Wrong. Re-enter password: ")
+                        tts("Password Wrong. Re-enter password: ")
+                        password = input("Password Wrong. Re-enter password: ")                        
                         creds = [id,password]
                         c=c+1
                 if c==2:
                     print("You have reached maximum tries. Try again later.")
+                    tts("You have reached maximum tries. Try again later.")
                     t = 1
                 return t
                 break
         except EOFError:
             print("Accound does not exist.")
+            tts("Accound does not exist.")
             break
         
 def signup():           #if account = signup
     f = open("D:\\Zamazon.in\credentials.dat","ab")     #binary file storing account credentials
+    tts("Please enter an acceptable UserID: ")
     id = input("Please enter an acceptable UserID: ")                 #id for new account = id
+    tts("Create a new password: ")
     password= input("Create a new password: ")         #password for new account - password
+    tts("Please enter your name: ")
     name = input("Please enter your name: ")                #name for new account - name
     creds = [id,password,name]
     pickle.dump(creds,f)                       #push account details to binary file 
     print("Account creation done. You are Successfully Logged In.")
+    tts("Account creation done. You are Successfully Logged In.")
     
 def add_to_cart(bill=0):      #add products to be delivered
+    tts("Enter name of items you want one by one: ")
     while True:
         itemname = input("Enter name of items you want one by one: ")   #name of item variable - itemname
         stocklist = open("D:\\Zamazon.in\stocks.dat","rb")  #open binary file containing stock
@@ -52,6 +71,7 @@ def add_to_cart(bill=0):      #add products to be delivered
                         bill = bill + (quan*item[2])                #create bill amount
             except EOFError:
                 break
+        tts("Do you want to enter another item?: ")
         cont = input("Do you want to enter another item?(Y/N): ")   #enter more items
         print(" ")
         if cont != "Y" and cont != "y":
@@ -59,48 +79,72 @@ def add_to_cart(bill=0):      #add products to be delivered
             break
     
 def pincode():          #check if pincode deliverable
+    tts("Please enter your pincode: ")
     pin = int(input("Please enter your pincode: "))      #pin for addresss delivery - pin
     print(" ")
     while True:
         a= pin//100000                   #checking procedure for pin availability
         if a==7:                       #checking procedure for pin availability
             print("Proceed to enter complete address:")
+            tts("Proceed to enter complete address:")
             break
         else:
             print("Order will not be placed")
-            print("We only deliver items in West Bengal.")   
+            tts("Order will not be placed")
+            print("We only deliver items in West Bengal.") 
+            tts("We only deliver items in West Bengal.")
+            tts("Enter 1.Re-enter the PIN  2.Exit : ")
             options= int(input("Enter 1.Re-enter the PIN  2.Exit : "))     #choice for pin re-enter/exit - options
             if options==1:
-                pin= int(input("Enter pin:"))                           #re-enter pin 
+                tts("Please re-enter your pincode:")
+                pin= int(input("Please re-enter your pincode:"))                           #re-enter pin 
             else:
                 break
     
 def address_check(t=0):    #check if address is deliverable
     print(" ")
+    tts("Please enter name of recipient: ")
     delivname = input("Please enter name of recipient: ")      #name of recipient - delivname
+    tts("Please enter complete address: ")
     addressinp= input("Please enter complete address: ")                 #variable for storing address of user - addressinp
+    print(" ")
     addressinp=addressinp.upper()
     addcheck= open("D:\\Zamazon.in\\addbook.dat","rb")      #binary file containing deliverable address - addcheck
     while True:
         try:
             ncheck = pickle.load(addcheck)              #load address from binary file - ncheck
             if addressinp==ncheck[0]:
-                print("Delivery possible within", (random.randint(2,10)), "days!")
+                r=random.randint(2,10)
+                r=str(r)
+                disp = str("Delivery possible within "+r+" days!")
+                print(disp)
+                tts(disp)
+                print(" ")
+                break
             elif addressinp!=ncheck[0]:
                 print("We dont deliver to this address yet.")
+                tts("We dont deliver to this address yet.")
+                print(" ")
                 break
         except EOFError:
             break
     print("Mobile NO:",mobileno)
+    tts("Mobile number:"+str(mobileno))
     print("Address:",addressinp)
+    tts("Address:"+str(addressinp))
+    print(" ")
     retlist = list()                                    #list to return value
     retlist = [delivname,addressinp]
     return retlist
     
 def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
+    tts("Do you want to enter a coupon code?(Y/N): ")
     coupchoice = input("Do you want to enter a coupon code?(Y/N): ")    #choice for entering coupon - coupchoice
+    print(" ")
     if coupchoice == "Y" or coupchoice == "y":
+        tts("Enter coupon code: ")
         coupinp = input("Enter coupon code: ")                          #user enters coupon code in - coupinp
+        print(" ")
         coupinp = coupinp.upper()                                       #convert coupon code to capitals
         coupon = open("D://Zamazon.in/coupon.dat", "rb")                #open binary file containing coupon codes
         while True:
@@ -116,6 +160,8 @@ def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
                     bill = bill
             except EOFError:
                 print("That is not a valid coupon code.")
+                tts("That is not a valid coupon code.")
+                print(" ")
                 break
     else:
         coupinp = "No coupon code applied"                              #no coupon code applied
@@ -125,26 +171,39 @@ def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
     return retlist
     
 def payment_method():   #select payment method
+    print("Please select your payment method: ")
+    tts("Please select your payment method: ")
+    print(" ")
     print("1. Cash on Delivery")
     print("2.Pay Online")
+    print(" ")
+    tts("Enter payment method choice - 1 or 2: ")
     paychoice = int(input("Enter payment method choice - 1 or 2: "))    #enter choice of payment mode
+    print(" ")
     return paychoice
    
 def transaction(paychoice): #ensure successful transaction 
-    print("Proceed to transaction:")
+    print("Processing transaction...")
+    tts("Processing transaction...")
     transid = random.randint(0,1000000000)      #transaction ID = transid
     print(" ")
     if paychoice == 1:                          #if payment method is Cash on Delivery
         print("Transaction successful.")
+        tts("Transaction successful.")
     elif paychoice == 2:                        #if payment method is Online Payment
         while True:
+            time.sleep(3)
             trans= random.randint(0,10)             #generate random number for transaction success verification
             if trans>3.5:                           #check random number for transaction success verification
                 print("Transaction successful")
+                tts("Transaction successful")
+                print(" ")
                 print("Order has been placed.")
+                tts("Order has been placed.")
                 break
             else:
                 print("Transaction not successfull.")
+                tts("Transaction not successfull.")
     return transid
     
 def deliv_fees(bill):       #delivery fees applicable
@@ -165,11 +224,17 @@ t=0
 
 #enter into user's account start
 print("Welcome to Zamazon.in!")
+tts("Welcome to Zamazon.in!")
 print("We wish you a wonderful shopping experience with us!")
+tts("We wish you a wonderful shopping experience with us!")
 print("Please login to your account for an even better experience!")
+tts("Please login to your account for an even better experience!")
 print(" ")
+tts("Please enter your mobile number : ")
 mobileno= int(input("Please enter your mobile number : +91 "))     #mobile number variable - mobileno
+tts("Do you wish to login or sign up? : ")
 account= str(input("Do you wish to login or sign up? : "))     #choice for login or sign up - account
+
 print(" ")
 account= account.lower() 
 #enter into user's account end                     
@@ -188,6 +253,7 @@ elif account=="signup" or account=="sign up":
 #add to cart items
 if exit==0:
     print("Please add the items you want to order to your cart.")
+    tts("Please add the items you want to order to your cart.")
     print(" ")
     bill = add_to_cart()
 #add to cart ends
@@ -226,6 +292,8 @@ if exit==0:
 if exit==0:
     print(" ")
     print("BILL DETAILS:")
+    tts("BILL DETAILS:")
+    print(" ")
     print("Name of recipient: ", delivname_add[0])      #print name of receiver
     print("Contact number: ", mobileno)                 #print mobile number
     print("Address: ", delivname_add[1])                #print address
