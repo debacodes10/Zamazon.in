@@ -3,8 +3,9 @@ import random
 
 def login(c=0, t=0):            #if account action = login
     f= open("D:\\Zamazon.in\credentials.dat","rb")   #binary file storing account credentials
-    id= input("enter id no:")               #store id no = id
-    password= input("enter password:")      #store password = password
+    id= input("Please enter your UserID: ")               #store id no = id
+    password= input("Please enter your password: ")      #store password = password
+    print(" ")
     creds = [id, password]
     while True:
         try:
@@ -30,33 +31,36 @@ def login(c=0, t=0):            #if account action = login
         
 def signup():           #if account = signup
     f = open("D:\\Zamazon.in\credentials.dat","ab")     #binary file storing account credentials
-    id = input("enter id no:")                 #id for new account = id
-    password= input("enter password:")         #password for new account - password
-    name = input("Enter name:")                #name for new account - name
+    id = input("Please enter an acceptable UserID: ")                 #id for new account = id
+    password= input("Create a new password: ")         #password for new account - password
+    name = input("Please enter your name: ")                #name for new account - name
     creds = [id,password,name]
     pickle.dump(creds,f)                       #push account details to binary file 
     print("Account creation done. You are Successfully Logged In.")
     
 def add_to_cart(bill=0):      #add products to be delivered
     while True:
-        itemname = input("Enter name of item you want: ")   #name of item variable - itemname
+        itemname = input("Enter name of items you want one by one: ")   #name of item variable - itemname
         stocklist = open("D:\\Zamazon.in\stocks.dat","rb")  #open binary file containing stock
         while True:
             try:
                 item = pickle.load(stocklist)               #load item lists
                 if item[0] == itemname:
                     quan = int(input("Enter number of items: "))    #quantity of item = quan
+                    print(" ")
                     if int(item[1]) >= quan:
                         bill = bill + (quan*item[2])                #create bill amount
             except EOFError:
                 break
         cont = input("Do you want to enter another item?(Y/N): ")   #enter more items
+        print(" ")
         if cont != "Y" and cont != "y":
             return bill
             break
     
 def pincode():          #check if pincode deliverable
-    pin = int(input("enter pin:"))      #pin for addresss delivery - pin
+    pin = int(input("Please enter your pincode: "))      #pin for addresss delivery - pin
+    print(" ")
     while True:
         a= pin//100000                   #checking procedure for pin availability
         if a==7:                       #checking procedure for pin availability
@@ -65,23 +69,26 @@ def pincode():          #check if pincode deliverable
         else:
             print("Order will not be placed")
             print("We only deliver items in West Bengal.")   
-            options= int(input("Enter 1.Re-enter the PIN  2.Exit"))     #choice for pin re-enter/exit - options
+            options= int(input("Enter 1.Re-enter the PIN  2.Exit : "))     #choice for pin re-enter/exit - options
             if options==1:
                 pin= int(input("Enter pin:"))                           #re-enter pin 
             else:
                 break
     
 def address_check(t=0):    #check if address is deliverable
-    delivname = input("Enter name of recipient: ")      #name of recipient - delivname
-    addressinp= input("enter address:")                 #variable for storing address of user - addressinp
+    print(" ")
+    delivname = input("Please enter name of recipient: ")      #name of recipient - delivname
+    addressinp= input("Please enter complete address: ")                 #variable for storing address of user - addressinp
+    addressinp=addressinp.upper()
     addcheck= open("D:\\Zamazon.in\\addbook.dat","rb")      #binary file containing deliverable address - addcheck
     while True:
         try:
             ncheck = pickle.load(addcheck)              #load address from binary file - ncheck
             if addressinp==ncheck[0]:
-                print("Delivery possible within ", (random.randint(2,10)), " days!")
+                print("Delivery possible within", (random.randint(2,10)), "days!")
             elif addressinp!=ncheck[0]:
                 print("We dont deliver to this address yet.")
+                break
         except EOFError:
             break
     print("Mobile NO:",mobileno)
@@ -153,29 +160,35 @@ def deliv_fees(bill):       #delivery fees applicable
 #declare variables start
 creds = list()                              #list to store account credentials - creds
 c=0                                         #counter for checking no. of wrong attempts - c
+t=0
 #declare variables end
 
 #enter into user's account start
-mobileno= int(input("Enter Mobile No : "))     #mobile number variable - mobileno
-account= str(input("Login or sign up : "))     #choice for login or sign up - account
+print("Welcome to Zamazon.in!")
+print("We wish you a wonderful shopping experience with us!")
+print("Please login to your account for an even better experience!")
+print(" ")
+mobileno= int(input("Please enter your mobile number : +91 "))     #mobile number variable - mobileno
+account= str(input("Do you wish to login or sign up? : "))     #choice for login or sign up - account
+print(" ")
 account= account.lower() 
 #enter into user's account end                     
-
-print("Welcome to Zamazon.in!",)
-print("We wish you a wonderful shopping experience with us!")
 
 #if account = login
 if account=="login":
     exit = login()
+    print(" ")
 #end account = login
 
 #if account = signup
-elif account=="signup":
+elif account=="signup" or account=="sign up":
     signup()
 #end account = signup
 
 #add to cart items
 if exit==0:
+    print("Please add the items you want to order to your cart.")
+    print(" ")
     bill = add_to_cart()
 #add to cart ends
 
@@ -218,7 +231,12 @@ if exit==0:
     print("Address: ", delivname_add[1])                #print address
     print("Bill amount: ", cou_dis_bil[2])              #print bill
     print("Delivery Fees: ", delivery_fee)              #delivery fees
-    print("Total Bill: ", cou_dis_bil[2]+delivery_fee)  #print total bill
+    print("Total Bill: ", cou_dis_bil[2]+delivery_fee)  #print total bill 
+    if (cou_dis_bil[2]+delivery_fee)>500 and (cou_dis_bil[2]+delivery_fee)<1000:
+        print("(Add items worth Rs", (1000-(cou_dis_bil[2]+delivery_fee)), " to avail free delivery!)")
+    elif (cou_dis_bil[2]+delivery_fee)<500:
+        print("(Add items worth Rs", (500-(cou_dis_bil[2]+delivery_fee)), "to avail delivery at Rs 50!)")
+        print("(Add items worth Rs", (1000-(cou_dis_bil[2]+delivery_fee)), "to avail free delivery!)")
     print("Transaction ID: ", transid)                  #print transaction ID
     print("Coupon code applied: ", cou_dis_bil[0])      #print coupon code
     print("You have saved: ", cou_dis_bil[1])           #print discount amount
