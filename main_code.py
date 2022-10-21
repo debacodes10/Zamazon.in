@@ -152,6 +152,7 @@ def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
                 coupret=pickle.load(coupon)
                 if coupinp==coupret[0]:
                     disc = int(coupinp[len(coupinp)-2:])
+                    print(disc)
                     discam = (disc*bill)                                            #calculate discount amount
                     bill = bill-discam                                              #calculate complete bill
                 else: 
