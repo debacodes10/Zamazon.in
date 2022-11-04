@@ -145,25 +145,25 @@ def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
         tts("Enter coupon code: ")
         coupinp = input("Enter coupon code: ")                          #user enters coupon code in - coupinp
         print(" ")
-        coupinp = coupinp.upper()                                       #convert coupon code to capitals
+        coupinp = coupinp.lower()                                       #convert coupon code to capitals
         coupon = open("D://Zamazon.in/coupon.dat", "rb")                #open binary file containing coupon codes
-        while True:
-            try: 
-                coupret=pickle.load(coupon)
-                if coupinp==coupret[0]:
-                    disc = int(coupinp[len(coupinp)-2:])
-                    print(disc)
-                    discam = (disc*bill)                                            #calculate discount amount
-                    bill = bill-discam                                              #calculate complete bill
-                else: 
-                    coupinp = "None"
-                    discam = 0
-                    bill = bill
-            except EOFError:
-                print("That is not a valid coupon code.")
-                tts("That is not a valid coupon code.")
-                print(" ")
-                break
+    try:
+        for i in range(0,5):
+            coupret=pickle.load(coupon)
+            if coupinp==coupret[i]:
+                disc = int(coupinp[len(coupinp)-2:])
+                print(disc)
+                discam = ((disc/100)*bill)
+                print (discam)                                            #calculate discount amount
+                bill = bill-discam                                              #calculate complete bill
+            else: 
+                coupinp = "None"
+                discam = 0
+                bill = bill
+    except EOFError:
+        print("That is not a valid coupon code.")
+        tts("That is not a valid coupon code.")
+        print(" ")
     else:
         coupinp = "No coupon code applied"                              #no coupon code applied
         discam = 0                                                      #no discount received
