@@ -87,7 +87,7 @@ def pincode():          #check if pincode deliverable
         if a==7:                       #checking procedure for pin availability
             print("Proceed to enter complete address:")
             tts("Proceed to enter complete address:")
-            break
+            return 0
         else:
             print("Order will not be placed")
             tts("Order will not be placed")
@@ -99,9 +99,9 @@ def pincode():          #check if pincode deliverable
                 tts("Please re-enter your pincode:")
                 pin= int(input("Please re-enter your pincode:"))                           #re-enter pin 
             else:
-                break
+                return 1
     
-def address_check(t=0):    #check if address is deliverable
+def address_check(u=0):    #check if address is deliverable
     print(" ")
     tts("Please enter name of recipient: ")
     delivname = input("Please enter name of recipient: ")      #name of recipient - delivname
@@ -110,32 +110,43 @@ def address_check(t=0):    #check if address is deliverable
     print(" ")
     addressinp=addressinp.upper()
     addcheck= open("D:\\Zamazon.in\\addbook.dat","rb")      #binary file containing deliverable address - addcheck
+    retlist = list()
     while True:
         try:
             ncheck = pickle.load(addcheck)              #load address from binary file - ncheck
-            if addressinp==ncheck[0]:
-                r=random.randint(2,10)
-                r=str(r)
-                disp = str("Delivery possible within "+r+" days!")
-                print(disp)
-                tts(disp)
-                print(" ")
-                break
-            elif addressinp!=ncheck[0]:
-                print("We dont deliver to this address yet.")
-                tts("We dont deliver to this address yet.")
-                print(" ")
+            for i in range(0,2):
+                if addressinp==ncheck[0]:
+                    r=random.randint(2,10)
+                    r=str(r)
+                    disp = str("Delivery possible within "+r+" days!")
+                    print(disp)
+                    tts(disp)
+                    print(" ")
+                    print("Mobile NO:",mobileno)
+                    tts("Mobile number:"+str(mobileno))
+                    print("Address:",addressinp)
+                    tts("Address:"+str(addressinp))
+                    print(" ")
+                    retlist = [delivname,addressinp,0]
+                    return retlist 
+                elif addressinp!=ncheck[0]:
+                    print("We dont deliver to this address yet.")
+                    tts("We dont deliver to this address yet.")
+                    tts("Press 1 to re enter complete address and 2 to exit. ")
+                    options = input("1. Re-enter complete address. 2. Exit. :")
+            if options==1:
+                tts("Please re-enter your address: ")
+                addressinp=input("Please re-enter your address: ")
+            else:                                   
+                retlist = [0,0,1]
+                return retlist                       
+            if i == 2:
+                print("You have reached maximum tries. Try again later.")
+                tts("You have reached maximum tries. Try again later.")
+                u=1
                 break
         except EOFError:
             break
-    print("Mobile NO:",mobileno)
-    tts("Mobile number:"+str(mobileno))
-    print("Address:",addressinp)
-    tts("Address:"+str(addressinp))
-    print(" ")
-    retlist = list()                                    #list to return value
-    retlist = [delivname,addressinp]
-    return retlist
     
 def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
     tts("Do you want to enter a coupon code?(Y/N): ")
@@ -147,27 +158,26 @@ def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
         print(" ")
         coupinp = coupinp.lower()                                       #convert coupon code to capitals
         coupon = open("D://Zamazon.in/coupon.dat", "rb")                #open binary file containing coupon codes
+        coupret=pickle.load(coupon)
     try:
         for i in range(0,5):
-            coupret=pickle.load(coupon)
             if coupinp==coupret[i]:
                 disc = int(coupinp[len(coupinp)-2:])
-                print(disc)
                 discam = ((disc/100)*bill)
-                print (discam)                                            #calculate discount amount
-                bill = bill-discam                                              #calculate complete bill
+                print(discam)
+                bill = bill-discam
+                retlist = [coupinp,discam,bill]
+                return retlist
             else: 
-                coupinp = "None"
                 discam = 0
                 bill = bill
     except EOFError:
         print("That is not a valid coupon code.")
         tts("That is not a valid coupon code.")
         print(" ")
-    else:
-        coupinp = "No coupon code applied"                              #no coupon code applied
+    else:                              #no coupon code applied
         discam = 0                                                      #no discount received
-        bill = bill                                                     #bill remains original amount
+        bill = bill                                                     #bill remains original amount'''
     retlist = [coupinp,discam,bill]
     return retlist
     
@@ -221,6 +231,8 @@ def deliv_fees(bill):       #delivery fees applicable
 creds = list()                              #list to store account credentials - creds
 c=0                                         #counter for checking no. of wrong attempts - c
 t=0
+u=0
+delivname_add = [0,0,1,1]
 #declare variables end
 
 #enter into user's account start
@@ -249,6 +261,7 @@ if account=="login":
 #if account = signup
 elif account=="signup" or account=="sign up":
     signup()
+    exit=0
 #end account = signup
 
 #add to cart items
@@ -261,36 +274,36 @@ if exit==0:
 
 #check if pin deliverable
 if exit==0:
-    pincode()
+    pp = pincode()
 #end pin deliverable
 
 #start address check for delivery 
-if exit == 0:
+if exit == 0 and pp==0:
     delivname_add = address_check()
 #end address check for delivery
 
 #coupon code start
-if exit==0:
+if exit==0 and delivname_add[2]==0 and pp==0:
     cou_dis_bil = coupon_apply(bill)
 #coupn code end
 
 #payment method start
-if exit==0:
+if exit==0 and delivname_add[2]==0 and pp==0:
     paychoice = payment_method()
 #payment method end
 
 #delivery feess start
-if exit==0:
+if exit==0 and delivname_add[2]==0 and pp==0:
     delivery_fee = deliv_fees(bill)
 #delivery fee end
 
 #start transaction procedure
-if exit==0:
+if exit==0 and delivname_add[2]==0 and pp==0:
     transid = transaction(paychoice)
 #end transaction procedure
 
 #display bill start
-if exit==0:
+if exit==0 and delivname_add[2]==0 and pp==0:
     print(" ")
     print("BILL DETAILS:")
     tts("BILL DETAILS:")
