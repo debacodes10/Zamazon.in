@@ -129,8 +129,10 @@ def address_check(u=0):    #check if address is deliverable
     print(" ")
     tts("Please enter name of recipient: ")
     delivname = input("Please enter name of recipient: ")      #name of recipient - delivname
+    tts("Please enter city  name: ")
+    addressinp= input("Please enter city name: ")                 #variable for storing address of user - addressinp
     tts("Please enter complete address: ")
-    addressinp= input("Please enter complete address: ")                 #variable for storing address of user - addressinp
+    addresstrash = input("Please enter complete address: ")
     print(" ")
     addressinp=addressinp.upper()
     addcheck= open("D:\\Zamazon.in\\addbook.dat","rb")      #binary file containing deliverable address - addcheck
@@ -148,10 +150,12 @@ def address_check(u=0):    #check if address is deliverable
                     print(" ")
                     print("Mobile NO:",mobileno)
                     tts("Mobile number:"+str(mobileno))
-                    print("Address:",addressinp)
-                    tts("Address:"+str(addressinp))
+                    print("City:",addressinp)
+                    tts("City:"+str(addressinp))
+                    print("Complete address: ", addresstrash)
+                    tts("Complete address: "+str(addresstrash))
                     print(" ")
-                    retlist = [delivname,addressinp,0]
+                    retlist = [delivname,addressinp,0,addresstrash]
                     return retlist 
                 elif addressinp!=ncheck[0]:
                     print("We dont deliver to this address yet.")
@@ -162,7 +166,7 @@ def address_check(u=0):    #check if address is deliverable
                         tts("Please re-enter your address: ")
                         addressinp=input("Please re-enter your address: ").upper()
                     else:                                   
-                        return [0,0,1]                       
+                        return [0,0,1,""]                       
         except EOFError:
             break
     
@@ -289,7 +293,7 @@ if exit==0:
     tts("Please add the items you want to order to your cart.")
     print(" ")
     bill = add_to_cart()
-    print(bill)
+    print("Amount in cart: ",bill)
 #add to cart ends
 
 #check if pin deliverable
@@ -330,9 +334,8 @@ if exit==0 and delivname_add[2]==0 and pp==0:
     print(" ")
     print("Name of recipient: ", delivname_add[0])      #print name of receiver
     print("Contact number: ", mobileno)                 #print mobile number
-    print("Address: ", delivname_add[1])                #print address
+    print("Address: ", delivname_add[3])                #print address
     print("Bill amount: ", cou_dis_bil[2])              #print bill
-    print(cou_dis_bil)
     print("Delivery Fees: ", delivery_fee)              #delivery fees
     print("Total Bill: ", cou_dis_bil[2]+delivery_fee)  #print total bill 
     if cou_dis_bil[2]>500 and cou_dis_bil[2]<1000:
