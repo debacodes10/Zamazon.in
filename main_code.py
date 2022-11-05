@@ -1,6 +1,6 @@
-import pickle
-import random
 import time
+import random
+import pickle
 import pyttsx3
 
 def tts(text):
