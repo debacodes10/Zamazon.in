@@ -56,27 +56,51 @@ def signup():           #if account = signup
     print("Account creation done. You are Successfully Logged In.")
     tts("Account creation done. You are Successfully Logged In.")
     
-def add_to_cart(bill=0):      #add products to be delivered
-    tts("Enter name of items you want one by one: ")
+def add_to_cart(bill=0):
+  prod_details = {"grocery":[["detergent", 50],["milk powder", 20],["toothpaste",60],["shampoo",150],["noodles",120]], 
+  "electronics":[["fridge",30000],["micro oven",10000],["induction",5000],["television",30000],["geyser",20000],["air conditioner",50000]], 
+  "beauty":[["foundation",500],["mascara",1200],["nail polish",800],["face powder",300],["primer", 400]],
+  "furniture":[["double bed", 35000],["sofa",22000],["bean bag", 2500],["bookshelf",8000],["shoe rack",5000]],
+  "clothing":[["shirt", 2000],["trousers", 2500],["hoodie", 1500],["shoes", 3000],["saree", 8000]]}
+
+  print("Categories: ")
+  for i in prod_details:
+    print(i)
+
+  cat_choice = input("Enter category you want to explore: ")
+
+  while True:
+    for i in prod_details:
+      if cat_choice==i:
+        print(prod_details[cat_choice][0][0])
+        print(prod_details[cat_choice][1][0])
+        print(prod_details[cat_choice][2][0])
+        print(prod_details[cat_choice][3][0])
+        print(prod_details[cat_choice][4][0])
+
+    prodch = input("Enter product you want to purchase: ")
     while True:
-        itemname = input("Enter name of items you want one by one: ")   #name of item variable - itemname
-        stocklist = open("D:\\Zamazon.in\stocks.dat","rb")  #open binary file containing stock
-        while True:
-            try:
-                item = pickle.load(stocklist)               #load item lists
-                if item[0] == itemname:
-                    quan = int(input("Enter number of items: "))    #quantity of item = quan
-                    print(" ")
-                    if int(item[1]) >= quan:
-                        bill = bill + (quan*item[2])                #create bill amount
-            except EOFError:
-                break
-        tts("Do you want to enter another item?: ")
-        cont = input("Do you want to enter another item?(Y/N): ")   #enter more items
-        print(" ")
-        if cont != "Y" and cont != "y":
-            return bill
-            break
+      if prodch == prod_details[cat_choice][0][0]:
+        quan = int(input("Enter number of items you want: "))
+        bill = bill + (prod_details[cat_choice][0][1]*quan)
+      elif prodch == prod_details[cat_choice][1][0]:
+        quan = int(input("Enter number of items you want: "))
+        bill = bill + (prod_details[cat_choice][1][1]*quan)
+      elif prodch == prod_details[cat_choice][2][0]:
+        quan = int(input("Enter number of items you want: "))
+        bill = bill + (prod_details[cat_choice][2][1]*quan)
+      elif prodch == prod_details[cat_choice][3][0]:
+        quan = int(input("Enter number of items you want: "))
+        bill = bill + (prod_details[cat_choice][3][1]*quan)
+      elif prodch == prod_details[cat_choice][4][0]:
+        quan = int(input("Enter number of items you want: "))
+        bill = bill + (prod_details[cat_choice][4][1]*quan)
+      options = int(input("1. Enter another item. 2. Exit: "))
+      if options==2:
+        return bill
+      else:
+          cat_choice = input("Enter category: ")
+          break
     
 def pincode():          #check if pincode deliverable
     tts("Please enter your pincode: ")
@@ -93,7 +117,7 @@ def pincode():          #check if pincode deliverable
             tts("Order will not be placed")
             print("We only deliver items in West Bengal.") 
             tts("We only deliver items in West Bengal.")
-            tts("Enter 1.Re-enter the PIN  2.Exit : ")
+            tts("Press 1 to Re-enter the PIN and 2 to Exit : ")
             options= int(input("Enter 1.Re-enter the PIN  2.Exit : "))     #choice for pin re-enter/exit - options
             if options==1:
                 tts("Please re-enter your pincode:")
@@ -114,7 +138,7 @@ def address_check(u=0):    #check if address is deliverable
     while True:
         try:
             ncheck = pickle.load(addcheck)              #load address from binary file - ncheck
-            for i in range(0,2):
+            while True:
                 if addressinp==ncheck[0]:
                     r=random.randint(2,10)
                     r=str(r)
@@ -132,54 +156,49 @@ def address_check(u=0):    #check if address is deliverable
                 elif addressinp!=ncheck[0]:
                     print("We dont deliver to this address yet.")
                     tts("We dont deliver to this address yet.")
-                    tts("Press 1 to re enter complete address and 2 to exit. ")
-                    options = input("1. Re-enter complete address. 2. Exit. :")
-            if options==1:
-                tts("Please re-enter your address: ")
-                addressinp=input("Please re-enter your address: ")
-            else:                                   
-                retlist = [0,0,1]
-                return retlist                       
-            if i == 2:
-                print("You have reached maximum tries. Try again later.")
-                tts("You have reached maximum tries. Try again later.")
-                u=1
-                break
+                    tts("Press 1 to re-enter complete address and 2 to exit. ")
+                    options = int(input("1. Re-enter complete address. 2. Exit. :"))
+                    if options==1:
+                        tts("Please re-enter your address: ")
+                        addressinp=input("Please re-enter your address: ").upper()
+                    else:                                   
+                        return [0,0,1]                       
         except EOFError:
             break
     
 def coupon_apply(bill,coupret=""):     #check coupon apply, discount and bill
-    tts("Do you want to enter a coupon code?(Y/N): ")
-    coupchoice = input("Do you want to enter a coupon code?(Y/N): ")    #choice for entering coupon - coupchoice
-    print(" ")
-    if coupchoice == "Y" or coupchoice == "y":
-        tts("Enter coupon code: ")
-        coupinp = input("Enter coupon code: ")                          #user enters coupon code in - coupinp
-        print(" ")
-        coupinp = coupinp.lower()                                       #convert coupon code to capitals
+    tts("Do you want to enter a coupon code?")
+    coupch = input("Do you want to enter a coupon code?(Y/N) : ")
+    if coupch == "Y" or coupch == "y":
         coupon = open("D://Zamazon.in/coupon.dat", "rb")                #open binary file containing coupon codes
-        coupret=pickle.load(coupon)
-    try:
-        for i in range(0,5):
-            if coupinp==coupret[i]:
-                disc = int(coupinp[len(coupinp)-2:])
-                discam = ((disc/100)*bill)
-                print(discam)
-                bill = bill-discam
-                retlist = [coupinp,discam,bill]
-                return retlist
-            else: 
-                discam = 0
-                bill = bill
-    except EOFError:
-        print("That is not a valid coupon code.")
-        tts("That is not a valid coupon code.")
-        print(" ")
-    else:                              #no coupon code applied
-        discam = 0                                                      #no discount received
-        bill = bill                                                     #bill remains original amount'''
-    retlist = [coupinp,discam,bill]
-    return retlist
+        print("List of available coupon codes: ")
+        tts("List of available coupon codes.")
+        while True:
+            try: 
+                coupret = pickle.load(coupon)
+                print(coupret[0])
+            except EOFError:
+                break
+        coupon.close()
+        
+        coupon = open("D://Zamazon.in/coupon.dat", "rb")
+        coupinp = input("Enter coupon code: ")
+        while True:
+            try:
+                coupret = pickle.load(coupon)
+                if coupinp == coupret[0]:
+                    disc = int(coupinp[len(coupinp)-2:])
+                    discam = ((disc/100)*bill)
+                    bill = bill-discam
+                    print("You have saved",discam)
+                    print("Total amount payable: ",bill)
+                    retlist = [coupinp,discam,bill]
+                    return retlist
+            except EOFError:
+                break
+    else:
+        retlist = ["None", 0, bill]
+        return retlist
     
 def payment_method():   #select payment method
     print("Please select your payment method: ")
@@ -270,6 +289,7 @@ if exit==0:
     tts("Please add the items you want to order to your cart.")
     print(" ")
     bill = add_to_cart()
+    print(bill)
 #add to cart ends
 
 #check if pin deliverable
@@ -312,13 +332,14 @@ if exit==0 and delivname_add[2]==0 and pp==0:
     print("Contact number: ", mobileno)                 #print mobile number
     print("Address: ", delivname_add[1])                #print address
     print("Bill amount: ", cou_dis_bil[2])              #print bill
+    print(cou_dis_bil)
     print("Delivery Fees: ", delivery_fee)              #delivery fees
     print("Total Bill: ", cou_dis_bil[2]+delivery_fee)  #print total bill 
-    if (cou_dis_bil[2]+delivery_fee)>500 and (cou_dis_bil[2]+delivery_fee)<1000:
-        print("(Add items worth Rs", (1000-(cou_dis_bil[2]+delivery_fee)), " to avail free delivery!)")
-    elif (cou_dis_bil[2]+delivery_fee)<500:
-        print("(Add items worth Rs", (500-(cou_dis_bil[2]+delivery_fee)), "to avail delivery at Rs 50!)")
-        print("(Add items worth Rs", (1000-(cou_dis_bil[2]+delivery_fee)), "to avail free delivery!)")
+    if cou_dis_bil[2]>500 and cou_dis_bil[2]<1000:
+        print("(Add items worth Rs", (1000-cou_dis_bil[2]), " to avail free delivery!)")
+    elif cou_dis_bil[2]<500:
+        print("(Add items worth Rs", (500-cou_dis_bil[2]), "to avail delivery at Rs 50!)")
+        print("(Add items worth Rs", (1000-cou_dis_bil[2]), "to avail free delivery!)")
     print("Transaction ID: ", transid)                  #print transaction ID
     print("Coupon code applied: ", cou_dis_bil[0])      #print coupon code
     print("You have saved: ", cou_dis_bil[1])           #print discount amount
