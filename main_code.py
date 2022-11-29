@@ -236,8 +236,8 @@ def transaction(paychoice): #ensure successful transaction
                 tts("Order has been placed.")
                 break
             else:
-                print("Transaction not successfull.")
-                tts("Transaction not successfull.")
+                print("Transaction not successfull. Retrying...")
+                tts("Transaction not successfull. Retrying...")
     return transid
     
 def deliv_fees(bill):       #delivery fees applicable
